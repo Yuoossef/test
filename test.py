@@ -4,8 +4,8 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 import tempfile
 
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" 
-FONT_SIZE = 20
+FONT_PATH = "C:\\Windows\\Fonts\\arial.ttf"
+FONT_SIZE = 25
 
 def load_yolov11_model(model_path):
     try:
