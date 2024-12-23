@@ -59,10 +59,10 @@ if uploaded_file:
     font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
 
 
-    hieroglyph_model = load_yolov11_model(r"C:\\Users\\youssef azam\\Downloads\\Keywords.pt")
-    attractions_model = load_yolov11_model(r"C:\\Users\\youssef azam\\Downloads\\Egypt Attractions.pt")
-    landmarks_model = load_yolov11_model(r"C:\\Users\\youssef azam\\Downloads\\Landmark Object detection.pt")
-    hieroglyph_net_model = load_yolov11_model(r"C:\\Users\\youssef azam\\Downloads\\Hieroglyph Net.pt")
+    hieroglyph_model = load_yolov11_model(r"https://github.com/Yuoossef/test/blob/main/Keywords.pt")
+    attractions_model = load_yolov11_model(r"https://github.com/Yuoossef/test/blob/main/Egypt%20Attractions.pt")
+    landmarks_model = load_yolov11_model(r"https://github.com/Yuoossef/test/blob/main/Landmark%20Object%20detection.pt")
+    hieroglyph_net_model = load_yolov11_model(r"https://github.com/Yuoossef/test/blob/main/Hieroglyph%20Net.pt")
 
     processed_classes = set()
     all_results = []
