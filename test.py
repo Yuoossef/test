@@ -4,34 +4,20 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 import tempfile
 import requests
-from io import BytesIO
 
 # Constants
-FONT_URL = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Regular.ttf"
+FONT_URL = "https://github.com/google/fonts/blob/main/apache/roboto/Roboto-Regular.ttf?raw=true"
 FONT_SIZE = 25
 
-# Function to load font from URL
-def load_font_from_url(font_url, font_size):
-    try:
-        response = requests.get(font_url)
-        response.raise_for_status()  # تحقق من نجاح التحميل
-        font_bytes = BytesIO(response.content)
-        font = ImageFont.truetype(font_bytes, font_size)
-        return font
-    except Exception as e:
-        print(f"Error loading font from URL: {e}")
-        return None
-
-# Function to download models from GitHub
-def download_model(url, save_path):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
+# Function to download a file from a URL
+def download_file(url, save_path):
+    response = requests.get(url)
+    if response.status_code == 200:
         with open(save_path, 'wb') as file:
             file.write(response.content)
-        print(f"Model downloaded and saved to {save_path}")
-    except Exception as e:
-        print(f"Failed to download model from {url}: {e}")
+        print(f"File downloaded and saved to {save_path}")
+    else:
+        print(f"Failed to download file from {url}")
 
 # Function to load YOLOv11 models
 def load_yolov11_model(model_path):
@@ -83,10 +69,13 @@ if uploaded_file:
 
     original_image = Image.open(image_path).convert("RGB")
     draw = ImageDraw.Draw(original_image)
-    font = load_font_from_url(FONT_URL, FONT_SIZE)
-    if not font:
-        st.error("Failed to load the font. Please check the URL.")
-        st.stop()
+
+    # Download the font file
+    font_path = "Roboto-Regular.ttf"
+    if not os.path.exists(font_path):
+        download_file(FONT_URL, font_path)
+
+    font = ImageFont.truetype(font_path, FONT_SIZE)
 
     # Model URLs
     model_urls = [
@@ -96,23 +85,19 @@ if uploaded_file:
         "https://github.com/Yuoossef/test/raw/main/Egypt%20Attractions.pt"
     ]
 
-    # Temporary paths for saving models
-    save_paths = [
-        os.path.join(tempfile.gettempdir(), "Landmark_Object_detection.pt"),
-        os.path.join(tempfile.gettempdir(), "Keywords.pt"),
-        os.path.join(tempfile.gettempdir(), "Hieroglyph_Net.pt"),
-        os.path.join(tempfile.gettempdir(), "Egypt_Attractions.pt")
-    ]
-
     # Download the models
-    for url, path in zip(model_urls, save_paths):
-        download_model(url, path)
+    model_paths = []
+    for url in model_urls:
+        model_name = url.split("/")[-1]
+        if not os.path.exists(model_name):
+            download_file(url, model_name)
+        model_paths.append(model_name)
 
     # Load YOLO models
-    hieroglyph_model = load_yolov11_model(save_paths[1])
-    attractions_model = load_yolov11_model(save_paths[3])
-    landmarks_model = load_yolov11_model(save_paths[0])
-    hieroglyph_net_model = load_yolov11_model(save_paths[2])
+    hieroglyph_model = load_yolov11_model(model_paths[1])
+    attractions_model = load_yolov11_model(model_paths[3])
+    landmarks_model = load_yolov11_model(model_paths[0])
+    hieroglyph_net_model = load_yolov11_model(model_paths[2])
 
     # Tracking processed classes
     processed_classes = set()
